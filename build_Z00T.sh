@@ -10,23 +10,23 @@ nocol='\033[0m'
 
 # Kernel details
 KERNEL_NAME="FireKernel"
-VERSION="r2.4f"
+VERSION="r2.5"
 DATE=$(date +"%d-%m-%Y-%I-%M")
 DEVICE="Z00T"
 FINAL_ZIP=$KERNEL_NAME-$VERSION-$DATE-$DEVICE.zip
 defconfig=Z00T_defconfig
 
 # Dirs
-KERNEL_DIR=~/kernel/msm8916
+KERNEL_DIR=~/kernel2/msm8916
 ANYKERNEL_DIR=$KERNEL_DIR/AnyKernel2
 KERNEL_IMG=$KERNEL_DIR/arch/arm64/boot/Image
 DT_IMAGE=$KERNEL_DIR/arch/arm64/boot/dt.img
-UPLOAD_DIR=~/kernel/$DEVICE
+UPLOAD_DIR=~/kernel2/$DEVICE
 DTBTOOL=$KERNEL_DIR/tools/dtbToolCM
 
 # Export
 export ARCH=arm64
-export CROSS_COMPILE=~/kernel/aarch64-linux-android-4.9/bin/aarch64-linux-android-
+export CROSS_COMPILE=~/kernel2/aarch64-linux-android-4.9/bin/aarch64-linux-android-
 export KBUILD_BUILD_USER="theimpulson"
 
 ## Functions ##
@@ -40,7 +40,7 @@ function make_kernel() {
   echo -e "$cyan***********************************************"
   echo -e "             Building kernel          "
   echo -e "***********************************************$nocol"
-  make -j8
+  make -j6
   if ! [ -a $KERNEL_IMG ];
   then
     echo -e "$red Kernel Compilation failed! Fix the errors! $nocol"
@@ -56,7 +56,7 @@ $DTBTOOL -2 -o $DT_IMAGE -s 2048 -p $KERNEL_DIR/scripts/dtc/ $KERNEL_DIR/arch/ar
 # Making zip
 function make_zip() {
 mkdir -p tmp_mod
-make -j8 modules_install INSTALL_MOD_PATH=tmp_mod INSTALL_MOD_STRIP=1
+make -j6 modules_install INSTALL_MOD_PATH=tmp_mod INSTALL_MOD_STRIP=1
 find tmp_mod/ -name '*.ko' -type f -exec cp '{}' $ANYKERNEL_DIR/modules/system/lib/modules/ \;
 cp $KERNEL_IMG $ANYKERNEL_DIR
 cp $DT_IMAGE $ANYKERNEL_DIR
